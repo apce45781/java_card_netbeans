@@ -3,27 +3,39 @@ package card;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Card_png {
     
+    private String papercard_type;
+    
     private String path;
-    private Image[][] card_type = new Image[4][13];
+    private Map<Integer , Image> paper_card = new HashMap();
     private Image card;
     private Image back;
     
-    Card_png(){
-        path = new File("paper_card").getAbsolutePath();
+    Card_png(String papercard_type){
+        this.papercard_type = papercard_type;
+//        path = new File("paper_card").getAbsolutePath();
+        path = "paper_card";
         setCard_type();
     }
     
     public void setCard_type(){
-        String[] type ={"spades_" , "love_" , "square_" , "plum_blossom_"};
-        for(int i = 0 ; i < 4 ; i ++){
-            for(int j = 0 ; j < 13 ; j ++){
-                card_type[i][j] = Toolkit.getDefaultToolkit().getImage(path + "\\" + type[i] + (j + 1) + ".png");
+        if(papercard_type.equals("background")){
+            paper_card.put(4 , Toolkit.getDefaultToolkit().getImage(path + "/" + papercard_type + ".png"));
+        }else if(papercard_type.equals("card")){
+            paper_card.put(5 , Toolkit.getDefaultToolkit().getImage(path + "/" + papercard_type + ".png"));
+        }else{
+            for(int i = 0 ; i < 13 ; i ++){
+                paper_card.put(i , Toolkit.getDefaultToolkit().getImage(path + "/" + papercard_type + "_" + (i + 1) + ".png"));
             }
         }
-        card = Toolkit.getDefaultToolkit().getImage(path + "\\card.png");
-        back = Toolkit.getDefaultToolkit().getImage(path + "\\back.png");
+    }
+    
+    public Image get(int key){
+        int number = key % 13;
+        return paper_card.get(number);
     }
 }
