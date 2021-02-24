@@ -19,7 +19,7 @@ public class Card_interface {
     protected final int positive = 0;
     protected final int negative = 1;
     //--------------------------------------------------------------------------------------------------------------------------------------------------
-    private Paper_card paper_card;
+    protected Paper_card paper_card;
     private Card_png[] png = 
     {new Card_png("spades") , new Card_png("love") , new Card_png("square") , new Card_png("plum_blossom") , new Card_png("background") , new Card_png("card")};
     
@@ -27,7 +27,7 @@ public class Card_interface {
     public int[] papercard_size = new int[2];
     private int[] position_gap = new int[2];
     
-    private int[][] p_coordinate = new int[13][2];
+    protected int[][] p_coordinate = new int[13][2];
     protected int[][] t_coordinate = new int[13][2];
     
     private Map<Integer , Float> papercard_gap = new HashMap();
@@ -161,6 +161,28 @@ public class Card_interface {
             t_coordinate[position][column] = (int)(p_coordinate[position][column] + (position_quantity[positive][position] - 1) * papercard_gap.get(position));
         }
         return card_count;
+    }
+    
+    public void change(int[] change_data){
+        int start = 0;
+        int end = 1;
+        int quantity = 2;
+        
+        position_quantity[positive][change_data[start]] -= change_data[quantity];
+        position_quantity[positive][change_data[end]] += change_data[quantity];
+        if(position_quantity[positive][change_data[start]] == position_quantity[negative][change_data[start]]){
+            if(position_quantity[negative][change_data[start]] != 0){
+                position_quantity[negative][change_data[start]] --;
+            }
+        }
+    }
+    
+    public int catch_coordinate(int position){
+        int count = -1;
+        for(int i = 0 ; i <= position ; i ++){
+            count += position_quantity[positive][i];
+        }
+        return count;
     }
     
     public void restart(){

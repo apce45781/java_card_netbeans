@@ -10,7 +10,7 @@ public class Paper_card {
     
     public Paper_card(){
         for(int i = 0 ; i < 52 ; i ++){
-            papercard_number.add(i + 1);
+            papercard_number.add(i % 13);
             papercard_type.add(i / 13);
         }
         shuffle();
@@ -36,5 +36,59 @@ public class Paper_card {
     
     public int getN(int number){
         return papercard_number.get(number);
+    }
+    
+    private void deleteT(int number , int count){
+        for(int i = 0 ; i < count ; i ++){
+            papercard_type.remove(number);
+        }
+    }
+    
+    private void deleteN(int number , int count){
+            a();
+        for(int i = 0 ; i < count ; i ++){
+            papercard_number.remove(number);
+        }
+            a();
+    }
+    public void a(){
+        for(int i = 0 ; i < papercard_number.size() ; i ++){
+            System.out.println((i + 1) + "----------" + papercard_number.get(i));
+        }
+    }
+    
+    private void setT(int position , int[] value , int count){
+        for(int i = 0 ; i < count ; i ++){
+            papercard_type.add(position , value[i]);
+        }
+    }
+    
+    private void setN(int position , int[] value , int count){
+        for(int i = 0 ; i < count ; i ++){
+            papercard_number.add(position , value[i]);
+        }
+    }
+    
+    public void change(int start , int end , int quantity){
+        int number = 0;
+        int type = 1;
+        int[][] change_card = new int[2][quantity];
+        for(int i = 0 ; i < quantity ; i ++){
+            change_card[number][i] = getN(start - quantity + 1 + i);
+            change_card[type][i] = getT(start - quantity + 1 + i);
+        }
+        if(start > end){
+            deleteN(start - quantity + 1 , quantity);
+            deleteT(start - quantity + 1 , quantity);
+            setT(end - quantity + 2 , change_card[type] , quantity);
+            setN(end - quantity + 2 , change_card[number] , quantity);
+            
+        }else{
+            setT(end - quantity + 2 , change_card[type] , quantity);
+            setN(end - quantity + 2 , change_card[number] , quantity);
+            deleteN(start - quantity + 1 , quantity);
+            deleteT(start - quantity + 1 , quantity);
+            
+        }
     }
 }

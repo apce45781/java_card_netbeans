@@ -13,7 +13,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     
     private JFrame jframe;
     private Card_interface card_interface;
-    private Mouse_click mc;
+    private Mouse_click mouse_click;
     private Mouse_move mm;
     private Mouse_up mu;
     
@@ -26,7 +26,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         this.addKeyListener(this);
         
         jframe = new JFrame();
-        mc = new Mouse_click();
+        mouse_click = new Mouse_click();
         mm = new Mouse_move();
         mu = new Mouse_up();
         card_interface = new Card_interface();
@@ -60,8 +60,14 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         }else if(keyword.equals("two_click")){
             number = 50;
         }
-        
-        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + (fraction + number));
+        fraction += number;
+        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
+    }
+    
+    public void change(int change_data[] , String fraction_key){
+        card_interface.paper_card.change(card_interface.catch_coordinate(change_data[0]) , card_interface.catch_coordinate(change_data[1]) , change_data[2]);
+        card_interface.change(change_data);
+        fraction(fraction_key);
     }
 
     @Override
@@ -71,20 +77,20 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         float mouse_X = e.getX();
         float mouse_Y = e.getY();
         
-        boolean one_click_switch = mc.one_click(card_interface , mouse_X , mouse_Y);
+        boolean one_click_switch = mouse_click.one_click(card_interface , mouse_X , mouse_Y);
         if(one_click_switch){
             fraction("one_click");
         }
         
+        int incompatible = 100;
         if(e.getClickCount() == 2) {
+            int start_position = mouse_click.judgment_click_position(card_interface , mouse_X , mouse_Y);
             
-            int incompatible = 100;
-            int position = mc.judgment_click_position(card_interface , mouse_X , mouse_Y);
-            if(position != incompatible){
+            if(start_position != incompatible){
+                int end_position = mouse_click.two_click(card_interface , card_interface.catch_coordinate(start_position));
                 
-                boolean two_click_switch = mc.two_click(position);
-                if(two_click_switch){
-                    fraction("two_click");
+                if(end_position != incompatible){
+                    change(new int[]{start_position , end_position , 1} , "two_click");
                 }
             }
         }

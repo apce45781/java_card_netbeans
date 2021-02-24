@@ -1,5 +1,5 @@
 package card;
 
-public class Mouse_move extends Card_interface {
+public class Mouse_move {
     
 }
