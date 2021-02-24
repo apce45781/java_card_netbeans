@@ -17,8 +17,7 @@ public class Card_png {
     
     Card_png(String papercard_type){
         this.papercard_type = papercard_type;
-//        path = new File("paper_card").getAbsolutePath();
-        path = "paper_card";
+        path = new File("paper_card").getAbsolutePath();
         setCard_type();
     }
     

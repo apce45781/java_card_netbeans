@@ -14,10 +14,10 @@ public class Card_interface {
     private final int background = 4;
     private final int card = 5;
     
-    private final int row = 0;
-    private final int column = 1;
-    private final int positive = 0;
-    private final int negative = 1;
+    protected final int row = 0;
+    protected final int column = 1;
+    protected final int positive = 0;
+    protected final int negative = 1;
     //--------------------------------------------------------------------------------------------------------------------------------------------------
     private Paper_card paper_card;
     private Card_png[] png = 
@@ -28,12 +28,12 @@ public class Card_interface {
     private int[] position_gap = new int[2];
     
     private int[][] p_coordinate = new int[13][2];
-    private int[][] t_coordinate = new int[13][2];
+    protected int[][] t_coordinate = new int[13][2];
     
     private Map<Integer , Float> papercard_gap = new HashMap();
     private float[] top_papercard_gap = new float[2];
     
-    private int[][] position_quantity = new int[2][13];
+    protected int[][] position_quantity = new int[2][13];
     
     public Card_interface(){
         paper_card = new Paper_card();
@@ -41,6 +41,7 @@ public class Card_interface {
     }
     
     public void position_setup(int jpanel_size_row , int jpanel_size_column){
+//        各種尺寸設定
         if(jpanel_size[row] != jpanel_size_row || jpanel_size[column] != jpanel_size_column){
             
             jpanel_size[row] = jpanel_size_row;
@@ -54,13 +55,13 @@ public class Card_interface {
             
             papercard_location_settings();
             
-            //設定單一座標卡片放置的間距
             int initial = 100;
             card_spacing(initial);
         }
     }
     
     public void papercard_location_settings(){
+//        位置1~13座標設定
         for(int i = 0 ; i < 7 ; i ++){
             p_coordinate[i][row] =
                     jpanel_size[row] - ((i + 1) * papercard_size[row]) - (i + 1) * ((jpanel_size[row] - (7 * papercard_size[row])) / 8);
@@ -78,7 +79,7 @@ public class Card_interface {
     }
     
     public void card_spacing(int position){ 
-        
+//        每個位置，卡片間的間距設定
         int initial = 100;
         if(position == initial){
             top_papercard_gap[row] = papercard_size[column] / 120;

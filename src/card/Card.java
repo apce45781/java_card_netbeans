@@ -13,6 +13,11 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     
     private JFrame jframe;
     private Card_interface card_interface;
+    private Mouse_click mc;
+    private Mouse_move mm;
+    private Mouse_up mu;
+    
+    private int fraction;
     
     Card(){
         this.setFocusable(true);
@@ -21,10 +26,16 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         this.addKeyListener(this);
         
         jframe = new JFrame();
+        mc = new Mouse_click();
+        mm = new Mouse_move();
+        mu = new Mouse_up();
         card_interface = new Card_interface();
+        
+        fraction = 0;
         
         jframe.setBounds(100 , 50 , 875 , 700);
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
         
         jframe.add(this);
         jframe.setVisible(true);
@@ -41,11 +52,43 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         
         card_interface.show_picture(g , this);
     }
+    
+    public void fraction(String keyword){
+        int number = 0;
+        if(keyword.equals("one_click")){
+            number = -10;
+        }else if(keyword.equals("two_click")){
+            number = 50;
+        }
+        
+        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + (fraction + number));
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
 //        滑鼠完整點擊
 
+        float mouse_X = e.getX();
+        float mouse_Y = e.getY();
+        
+        boolean one_click_switch = mc.one_click(card_interface , mouse_X , mouse_Y);
+        if(one_click_switch){
+            fraction("one_click");
+        }
+        
+        if(e.getClickCount() == 2) {
+            
+            int incompatible = 100;
+            int position = mc.judgment_click_position(card_interface , mouse_X , mouse_Y);
+            if(position != incompatible){
+                
+                boolean two_click_switch = mc.two_click(position);
+                if(two_click_switch){
+                    fraction("two_click");
+                }
+            }
+        }
+        repaint();
     }
 
     @Override
