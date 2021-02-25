@@ -1,12 +1,17 @@
 package card;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Paper_card {
     private int shuffle_frequency = 100;
-    private List<Integer> papercard_number = new LinkedList();
-    private List<Integer> papercard_type = new LinkedList();
+    private List<Integer> papercard_number = new ArrayList();
+    private List<Integer> papercard_type = new ArrayList();
+    
+    protected int move_card_position = 0;
+    
+    protected List<Integer> move_card_number = new ArrayList();
+    protected List<Integer> move_card_type = new ArrayList();
     
     public Paper_card(){
         for(int i = 0 ; i < 52 ; i ++){
@@ -45,15 +50,8 @@ public class Paper_card {
     }
     
     private void deleteN(int number , int count){
-            a();
         for(int i = 0 ; i < count ; i ++){
             papercard_number.remove(number);
-        }
-            a();
-    }
-    public void a(){
-        for(int i = 0 ; i < papercard_number.size() ; i ++){
-            System.out.println((i + 1) + "----------" + papercard_number.get(i));
         }
     }
     

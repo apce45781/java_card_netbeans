@@ -34,7 +34,6 @@ public class Card_png {
     }
     
     public Image get(int key){
-        int number = key;
-        return paper_card.get(number);
+        return paper_card.get(key);
     }
 }
