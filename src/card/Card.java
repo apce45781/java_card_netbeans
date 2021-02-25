@@ -105,6 +105,16 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     @Override
     public void mouseDragged(MouseEvent e) {
 //        滑鼠點擊並移動
+
+        float mouse_X = e.getX();
+        float mouse_Y = e.getY();
+        //判斷起始點位置是否在卡片範圍內(100 == false)
+        if(mm.judge_position() != 100){
+            //判斷是否牌已"拿起"，並且避免滑鼠按住造成一直重複"拿起"
+            if(mm.card_move()){
+                repaint();
+            }
+        }
     }
 
     @Override
