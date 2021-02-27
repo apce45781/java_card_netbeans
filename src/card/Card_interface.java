@@ -19,7 +19,7 @@ public class Card_interface {
     protected final int positive = 0;
     protected final int negative = 1;
     //--------------------------------------------------------------------------------------------------------------------------------------------------
-    protected Paper_card paper_card;
+    protected Paper_card pc;
     private Card_png[] png = 
     {new Card_png("spades") , new Card_png("love") , new Card_png("square") , new Card_png("plum_blossom") , new Card_png("background") , new Card_png("card")};
     
@@ -38,7 +38,7 @@ public class Card_interface {
     public float[] mouse_point = new float[2];
     
     public Card_interface(){
-        paper_card = new Paper_card();
+        pc = new Paper_card();
     }
     
     public void position_setup(int jpanel_size_row , int jpanel_size_column){
@@ -132,12 +132,12 @@ public class Card_interface {
     }
     
     public void move_card(Graphics g , JPanel jpanel){
-        if(paper_card.move_card_number.size() == 1){
-            g.drawImage(png[paper_card.move_card_type.get(0)].get(paper_card.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_size[column] / 2) , papercard_size[row] , papercard_size[column] , jpanel);
+        if(pc.move_card_number.size() == 1){
+            g.drawImage(png[pc.move_card_type.get(0)].get(pc.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_size[column] / 2) , papercard_size[row] , papercard_size[column] , jpanel);
         }else{
-            g.drawImage(png[paper_card.move_card_type.get(0)].get(paper_card.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(paper_card.move_card_position) / 2) , papercard_size[row] , papercard_size[column] , jpanel);
-            for(int i = 1 ; i < paper_card.move_card_number.size() ; i ++){
-                g.drawImage(png[paper_card.move_card_type.get(i)].get(paper_card.move_card_number.get(i)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(paper_card.move_card_position) / 2 + i * papercard_gap.get(paper_card.move_card_position)) , papercard_size[row] , papercard_size[column] , jpanel);
+            g.drawImage(png[pc.move_card_type.get(0)].get(pc.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2) , papercard_size[row] , papercard_size[column] , jpanel);
+            for(int i = 1 ; i < pc.move_card_number.size() ; i ++){
+                g.drawImage(png[pc.move_card_type.get(i)].get(pc.move_card_number.get(i)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2 + i * papercard_gap.get(pc.move_card_position)) , papercard_size[row] , papercard_size[column] , jpanel);
             }
         }
     }
@@ -151,13 +151,13 @@ public class Card_interface {
             }else if(position > 6){
                 //只實現最上層2張卡牌
                 if(i > position_quantity[positive][position] - 2){
-                    g.drawImage(png[paper_card.getT(card_count)].get(paper_card.getN(card_count)) , p_coordinate[position][row] , p_coordinate[position][column] , papercard_size[row] , papercard_size[column] , jpanel);
+                    g.drawImage(png[pc.getT(card_count)].get(pc.getN(card_count)) , p_coordinate[position][row] , p_coordinate[position][column] , papercard_size[row] , papercard_size[column] , jpanel);
                 }
             }else{
                 if(i < position_quantity[negative][position]){
                     g.drawImage(png[card].get(card) , p_coordinate[position][row] , (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) , papercard_size[row] , papercard_size[column] , jpanel);
                 }else{
-                    g.drawImage(png[paper_card.getT(card_count)].get(paper_card.getN(card_count)) , p_coordinate[position][row] , (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) , papercard_size[row] , papercard_size[column] , jpanel);
+                    g.drawImage(png[pc.getT(card_count)].get(pc.getN(card_count)) , p_coordinate[position][row] , (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) , papercard_size[row] , papercard_size[column] , jpanel);
                 }
             }
             card_count ++;
@@ -175,7 +175,7 @@ public class Card_interface {
         return card_count;
     }
     
-    public void change(int start_position , int end_position , int move_card_quantity){
+    public void position_quantity_change(int start_position , int end_position , int move_card_quantity){
         
         position_quantity[positive][start_position] -= move_card_quantity;
         position_quantity[positive][end_position] += move_card_quantity;

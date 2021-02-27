@@ -8,8 +8,7 @@ public class Paper_card {
     private List<Integer> papercard_number = new ArrayList();
     private List<Integer> papercard_type = new ArrayList();
     
-    protected int move_card_position = 0;
-    
+    protected int move_card_position = 100;
     protected List<Integer> move_card_number = new ArrayList();
     protected List<Integer> move_card_type = new ArrayList();
     
@@ -43,13 +42,13 @@ public class Paper_card {
         return papercard_number.get(number);
     }
     
-    private void deleteT(int number , int count){
+    protected void deleteT(int number , int count){
         for(int i = 0 ; i < count ; i ++){
             papercard_type.remove(number);
         }
     }
     
-    private void deleteN(int number , int count){
+    protected void deleteN(int number , int count){
         for(int i = 0 ; i < count ; i ++){
             papercard_number.remove(number);
         }
@@ -67,7 +66,7 @@ public class Paper_card {
         }
     }
     
-    public void change(int start , int end , int quantity){
+    public void card_position_change(int start , int end , int quantity){
         int number = 0;
         int type = 1;
         int[][] change_card = new int[2][quantity];

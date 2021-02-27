@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 public class Card extends JPanel implements MouseListener , MouseMotionListener , KeyListener{
     
     private JFrame jframe;
-    private Mouse_keyboard mouse_keyboard;
-    private Card_interface card_interface;
+    private Mouse_keyboard mk;
+    private Card_interface ci;
     
     private int fraction;
     
@@ -24,8 +24,8 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         this.addKeyListener(this);
         
         jframe = new JFrame();
-        mouse_keyboard = new Mouse_keyboard();
-        card_interface = new Card_interface();
+        mk = new Mouse_keyboard();
+        ci = new Card_interface();
         
         fraction = 0;
         
@@ -45,10 +45,10 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     
     @Override
     public void paint(Graphics g){
-        card_interface.position_setup(this.getWidth() , this.getHeight());
-        card_interface.show_background(this , g);
+        ci.position_setup(this.getWidth() , this.getHeight());
+        ci.show_background(this , g);
         
-        card_interface.show_picture(g , mouse_keyboard , this);
+        ci.show_picture(g , mk , this);
     }
     
     public void fraction(String keyword){
@@ -62,46 +62,40 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
     }
     
-    public void change(int start_position , int end_position , int move_card_quantity , String fraction_key){
-        card_interface.paper_card.change(card_interface.catch_coordinate(start_position) , card_interface.catch_coordinate(end_position) , move_card_quantity);
-        card_interface.change(start_position , end_position , move_card_quantity);
-        fraction(fraction_key);
-    }
-    
     public void restart(){
         
-        card_interface.paper_card.shuffle();
+        ci.pc.shuffle();
         
-        card_interface.position_quantity[card_interface.positive][0] = 7;
-        card_interface.position_quantity[card_interface.positive][1] = 6;
-        card_interface.position_quantity[card_interface.positive][2] = 5;
-        card_interface.position_quantity[card_interface.positive][3] = 4;
-        card_interface.position_quantity[card_interface.positive][4] = 3;
-        card_interface.position_quantity[card_interface.positive][5] = 2;
-        card_interface.position_quantity[card_interface.positive][6] = 1;
-        card_interface.position_quantity[card_interface.positive][7] = 0;
-        card_interface.position_quantity[card_interface.positive][8] = 0;
-        card_interface.position_quantity[card_interface.positive][9] = 0;
-        card_interface.position_quantity[card_interface.positive][10] = 0;
-        card_interface.position_quantity[card_interface.positive][11] = 0;
-        card_interface.position_quantity[card_interface.positive][12] = 24;
+        ci.position_quantity[ci.positive][0] = 7;
+        ci.position_quantity[ci.positive][1] = 6;
+        ci.position_quantity[ci.positive][2] = 5;
+        ci.position_quantity[ci.positive][3] = 4;
+        ci.position_quantity[ci.positive][4] = 3;
+        ci.position_quantity[ci.positive][5] = 2;
+        ci.position_quantity[ci.positive][6] = 1;
+        ci.position_quantity[ci.positive][7] = 0;
+        ci.position_quantity[ci.positive][8] = 0;
+        ci.position_quantity[ci.positive][9] = 0;
+        ci.position_quantity[ci.positive][10] = 0;
+        ci.position_quantity[ci.positive][11] = 0;
+        ci.position_quantity[ci.positive][12] = 24;
         
-        card_interface.position_quantity[card_interface.negative][0] = 6;
-        card_interface.position_quantity[card_interface.negative][1] = 5;
-        card_interface.position_quantity[card_interface.negative][2] = 4;
-        card_interface.position_quantity[card_interface.negative][3] = 3;
-        card_interface.position_quantity[card_interface.negative][4] = 2;
-        card_interface.position_quantity[card_interface.negative][5] = 1;
-        card_interface.position_quantity[card_interface.negative][6] = 0;
-        card_interface.position_quantity[card_interface.negative][7] = 0;
-        card_interface.position_quantity[card_interface.negative][8] = 0;
-        card_interface.position_quantity[card_interface.negative][9] = 0;
-        card_interface.position_quantity[card_interface.negative][10] = 0;
-        card_interface.position_quantity[card_interface.negative][11] = 0;
-        card_interface.position_quantity[card_interface.negative][12] = 24;
+        ci.position_quantity[ci.negative][0] = 6;
+        ci.position_quantity[ci.negative][1] = 5;
+        ci.position_quantity[ci.negative][2] = 4;
+        ci.position_quantity[ci.negative][3] = 3;
+        ci.position_quantity[ci.negative][4] = 2;
+        ci.position_quantity[ci.negative][5] = 1;
+        ci.position_quantity[ci.negative][6] = 0;
+        ci.position_quantity[ci.negative][7] = 0;
+        ci.position_quantity[ci.negative][8] = 0;
+        ci.position_quantity[ci.negative][9] = 0;
+        ci.position_quantity[ci.negative][10] = 0;
+        ci.position_quantity[ci.negative][11] = 0;
+        ci.position_quantity[ci.negative][12] = 24;
         
         int initial = 100;
-        card_interface.card_spacing(initial);
+        ci.card_spacing(initial);
         
 //        move_card.clear();
 //        move_type.clear();
@@ -115,23 +109,16 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         float mouse_X = e.getX();
         float mouse_Y = e.getY();
         
-        boolean one_click_switch = mouse_keyboard.one_click(card_interface , mouse_X , mouse_Y);
+        boolean one_click_switch = mk.one_click_switch(ci , mouse_X , mouse_Y);
         if(one_click_switch){
             fraction("one_click");
         }
         
         int click_quantity = 2;
         if(e.getClickCount() == click_quantity) {
-            int start_position = mouse_keyboard.catch_start_position(card_interface, mouse_X, mouse_Y , new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6 , 11});
-            
-            int incompatible = 100;
-            if(start_position != incompatible){
-                int end_position = mouse_keyboard.two_click(card_interface , start_position);
-                
-                if(end_position != incompatible){
-                    int move_card_quantity = 1;
-                    change(start_position , end_position , move_card_quantity , "two_click");
-                }
+            boolean two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
+            if(two_click_switch){
+                fraction("two_click");
             }
         }
         repaint();
@@ -139,7 +126,21 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
 
     @Override
     public void mouseReleased(MouseEvent e) {
-//        滑鼠單一放開動作
+////        滑鼠單一放開動作
+//        if(mk.mouse_status() == mk.pick_up){
+//            int end_position;
+//            
+//            if(ci.pc.move_card_number.size() == 1){
+//                for(int i : new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10}){
+//                    end_position = mk.catch_position_card(ci , i);
+//                }
+//            }else{
+//                for(int i : new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6}){
+//                    end_position = mk.catch_position_card(ci , i);
+//                }
+//            }
+//            
+//        }
     }
 
     @Override
@@ -149,16 +150,16 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         float mouse_X = e.getX();
         float mouse_Y = e.getY();
         
-        int incompatible = 100;
-        int start_position = mouse_keyboard.catch_start_position(card_interface, mouse_X, mouse_Y , new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10 , 11});
-        if(start_position != incompatible){
-            card_interface.mouse_point[card_interface.row] = mouse_X;
-            card_interface.mouse_point[card_interface.column] = mouse_Y;
-            if(mouse_keyboard.mouse_status() == mouse_keyboard.initial){
-                mouse_keyboard.mouse_move(card_interface , start_position);
-                repaint();
-            }
+        ci.mouse_point[ci.row] = mouse_X;
+        ci.mouse_point[ci.column] = mouse_Y;
+        
+        if(mk.mouse_status() == mk.initial){
+            mk.mouse_move(ci , mouse_X , mouse_Y);
         }
+        repaint();
+        try{
+            Thread.sleep(30);
+        }catch(InterruptedException ex){}
     }
 
     @Override
