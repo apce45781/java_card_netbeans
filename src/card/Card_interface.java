@@ -123,15 +123,15 @@ public class Card_interface {
         int papercard_count = 0;
         
         for(int position = 0 ; position < 13 ; position ++){
-            papercard_count = show(g , position , papercard_count , jpanel);
+            papercard_count = position_show(g , position , papercard_count , jpanel);
         }
         
-        if(mouse_keyboard.mouse_status() != mouse_keyboard.initial){
-            move_card(g , jpanel);
+        if(mouse_keyboard.mouse_status() == mouse_keyboard.move){
+            move_card_show(g , jpanel);
         }
     }
     
-    public void move_card(Graphics g , JPanel jpanel){
+    public void move_card_show(Graphics g , JPanel jpanel){
         if(pc.move_card_number.size() == 1){
             g.drawImage(png[pc.move_card_type.get(0)].get(pc.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_size[column] / 2) , papercard_size[row] , papercard_size[column] , jpanel);
         }else{
@@ -142,7 +142,7 @@ public class Card_interface {
         }
     }
     
-    public int show(Graphics g , int position , int count , JPanel jpanel){
+    public int position_show(Graphics g , int position , int count , JPanel jpanel){
         int card_count = count;
         
         for(int i = 0 ; i < position_quantity[positive][position] ; i ++){
@@ -175,22 +175,33 @@ public class Card_interface {
         return card_count;
     }
     
-    public void position_quantity_change(int start_position , int end_position , int move_card_quantity){
-        
-        position_quantity[positive][start_position] -= move_card_quantity;
-        position_quantity[positive][end_position] += move_card_quantity;
-        if(position_quantity[positive][start_position] == position_quantity[negative][start_position]){
-            if(position_quantity[negative][start_position] != 0){
-                position_quantity[negative][start_position] --;
-            }
-        }
-    }
-    
     public int catch_coordinate(int position){
         int count = -1;
         for(int i = 0 ; i <= position ; i ++){
             count += position_quantity[positive][i];
         }
         return count;
+    }
+    
+    public void position_quantity_change(int start_position , int end_position){
+        position_quantity_remove(start_position);
+        judgment_positive_and_negative(start_position);
+        position_quantity_add(end_position);
+    }
+    
+    public void position_quantity_add(int end_position){
+        position_quantity[positive][end_position] += pc.move_card_number.size();
+    }
+    
+    public void position_quantity_remove(int start_position){
+        position_quantity[positive][start_position] -= pc.move_card_number.size();
+    }
+    
+    public void judgment_positive_and_negative(int start_position){
+        if(position_quantity[positive][start_position] == position_quantity[negative][start_position]){
+            if(position_quantity[negative][start_position] != 0){
+                position_quantity[negative][start_position] --;
+            }
+        }
     }
 }

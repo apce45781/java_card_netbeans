@@ -42,50 +42,28 @@ public class Paper_card {
         return papercard_number.get(number);
     }
     
-    protected void deleteT(int number , int count){
+    protected void delete(int start_position , int count){
         for(int i = 0 ; i < count ; i ++){
-            papercard_type.remove(number);
+            papercard_type.remove(start_position);
+            papercard_number.remove(start_position);
         }
     }
     
-    protected void deleteN(int number , int count){
-        for(int i = 0 ; i < count ; i ++){
-            papercard_number.remove(number);
+    private void add(int position , int count){
+        for(int i = 1 ; i <= count ; i ++){
+            papercard_type.add(position - count + i + 1 , move_card_type.get(count - i));
+            papercard_number.add(position - count + i + 1 , move_card_number.get(count - i));
         }
     }
     
-    private void setT(int position , int[] value , int count){
-        for(int i = 0 ; i < count ; i ++){
-            papercard_type.add(position , value[i]);
-        }
-    }
-    
-    private void setN(int position , int[] value , int count){
-        for(int i = 0 ; i < count ; i ++){
-            papercard_number.add(position , value[i]);
-        }
-    }
-    
-    public void card_position_change(int start , int end , int quantity){
-        int number = 0;
-        int type = 1;
-        int[][] change_card = new int[2][quantity];
-        for(int i = 0 ; i < quantity ; i ++){
-            change_card[number][i] = getN(start - quantity + 1 + i);
-            change_card[type][i] = getT(start - quantity + 1 + i);
-        }
+    public void paper_card_change(int start , int end){
         if(start > end){
-            deleteN(start - quantity + 1 , quantity);
-            deleteT(start - quantity + 1 , quantity);
-            setT(end - quantity + 2 , change_card[type] , quantity);
-            setN(end - quantity + 2 , change_card[number] , quantity);
+            delete(start , move_card_number.size());
+            add(end , move_card_number.size());
             
         }else{
-            setT(end - quantity + 2 , change_card[type] , quantity);
-            setN(end - quantity + 2 , change_card[number] , quantity);
-            deleteN(start - quantity + 1 , quantity);
-            deleteT(start - quantity + 1 , quantity);
-            
+            add(end , move_card_number.size());
+            delete(start , move_card_number.size());
         }
     }
 }

@@ -7,9 +7,14 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Card extends JPanel implements MouseListener , MouseMotionListener , KeyListener{
+    
+    private final int negative_ten = -10;
+    private final int fifty = 50;
+    private final int ten = 10;
     
     private JFrame jframe;
     private Mouse_keyboard mk;
@@ -51,15 +56,9 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         ci.show_picture(g , mk , this);
     }
     
-    public void fraction(String keyword){
-        int number = 0;
-        if(keyword.equals("one_click")){
-            number = -10;
-        }else if(keyword.equals("two_click")){
-            number = 50;
-        }
-        fraction += number;
-        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
+    public void fraction(int fraction){
+        this.fraction += fraction;
+        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + this.fraction);
     }
     
     public void restart(){
@@ -111,14 +110,14 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         
         boolean one_click_switch = mk.one_click_switch(ci , mouse_X , mouse_Y);
         if(one_click_switch){
-            fraction("one_click");
+            fraction(negative_ten);
         }
         
         int click_quantity = 2;
         if(e.getClickCount() == click_quantity) {
             boolean two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
             if(two_click_switch){
-                fraction("two_click");
+                fraction(fifty);
             }
         }
         repaint();
@@ -126,21 +125,23 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
 
     @Override
     public void mouseReleased(MouseEvent e) {
-////        滑鼠單一放開動作
-//        if(mk.mouse_status() == mk.pick_up){
-//            int end_position;
-//            
-//            if(ci.pc.move_card_number.size() == 1){
-//                for(int i : new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 10}){
-//                    end_position = mk.catch_position_card(ci , i);
-//                }
-//            }else{
-//                for(int i : new int[]{0 , 1 , 2 , 3 , 4 , 5 , 6}){
-//                    end_position = mk.catch_position_card(ci , i);
-//                }
-//            }
-//            
-//        }
+//        滑鼠單一放開動作
+        if(mk.mouse_status() == mk.move){
+            int end_position = mk.mouse_up(ci);
+            
+            if(end_position < 7){
+                fraction(ten);
+            }else if(end_position < 11){
+                fraction(fifty);
+            }
+            mk.back_home(ci);
+            
+            int initial = 100;
+            ci.pc.move_card_number.clear();
+            ci.pc.move_card_type.clear();
+            ci.pc.move_card_position = initial;
+            mk.change_mouse_status(mk.initial);
+        }
     }
 
     @Override
@@ -165,6 +166,13 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     @Override
     public void keyPressed(KeyEvent e) {
 //        鍵盤敲擊
+        if(e.getKeyCode() == KeyEvent.VK_F2){
+            if(JOptionPane.showConfirmDialog(jframe , "遊戲還未完成\n是否重開新局", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                restart();
+                fraction(0);
+                repaint();
+            }
+        }
     }
 
     @Override
