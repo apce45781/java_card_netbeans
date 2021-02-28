@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 
-public class Card_interface {
+public class Card_interface{
     private final int spades = 0;
     private final int love = 1;
     private final int square = 2;
@@ -33,7 +33,7 @@ public class Card_interface {
     protected Map<Integer , Float> papercard_gap = new HashMap();
     private float[] top_papercard_gap = new float[2];
     
-    protected int[][] position_quantity = new int[2][13];
+    protected int[][] position_quantity = {{7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 24} , {6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 23}};
     
     public float[] mouse_point = new float[2];
     
@@ -88,22 +88,12 @@ public class Card_interface {
             for(int i = 0 ; i < 7 ; i ++){
                 papercard_gap.put(i , (float)(papercard_size[column] / 4));
             }
-        }/*else{
-            if(Getmove_paper_position() < 7){
-                if(card_position[Getmove_paper_position()][1] + (card_col / 4) * (positive[Getmove_paper_position()] - 1) + card_col > getheight){
-                    card_spacing[1][Getmove_paper_position()] = (getheight - card_position[Getmove_paper_position()][1] - card_col) / (positive[Getmove_paper_position()] - 1);
-                }else if(card_spacing[1][Getmove_paper_position()] != card_col / 4){
-                    card_spacing[1][Getmove_paper_position()] = card_col / 4;
-                }
+        }else{
+            if(t_coordinate[position][column] + papercard_size[column] >= jpanel_size[column]){
+                float gap = (t_coordinate[position][column] - p_coordinate[position][column]) / (position_quantity[positive][position] - 1);
+                papercard_gap.put(position , gap);
             }
-            if(position < 7){
-                if(card_position[position][1] + (card_col / 4) * (positive[position] - 1) + card_col > getheight){
-                    card_spacing[1][position] = (getheight - card_position[position][1] - card_col) / (positive[position] - 1);
-                }else if(card_spacing[1][position] != card_col / 4){
-                    card_spacing[1][position] = card_col / 4;
-                }
-            }
-        }*/
+        }
     }
     
     public void show_background(JPanel jpanel , Graphics g){
@@ -118,7 +108,7 @@ public class Card_interface {
         }
     }
     
-    public void show_picture(Graphics g , Mouse_keyboard mouse_keyboard , JPanel jpanel){
+    public void show_picture(Graphics g , Mouse_keyboard mk , JPanel jpanel) {
         
         int papercard_count = 0;
         
@@ -126,18 +116,20 @@ public class Card_interface {
             papercard_count = position_show(g , position , papercard_count , jpanel);
         }
         
-        if(mouse_keyboard.mouse_status() == mouse_keyboard.move){
+        if(mk.mouse_status() == mk.move){
             move_card_show(g , jpanel);
         }
     }
     
-    public void move_card_show(Graphics g , JPanel jpanel){
-        if(pc.move_card_number.size() == 1){
+    public void move_card_show(Graphics g , JPanel jpanel) throws java.lang.IndexOutOfBoundsException {
+        int quantity = pc.move_card_number.size();
+        
+        if(quantity == 1){
             g.drawImage(png[pc.move_card_type.get(0)].get(pc.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_size[column] / 2) , papercard_size[row] , papercard_size[column] , jpanel);
         }else{
-            g.drawImage(png[pc.move_card_type.get(0)].get(pc.move_card_number.get(0)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2) , papercard_size[row] , papercard_size[column] , jpanel);
-            for(int i = 1 ; i < pc.move_card_number.size() ; i ++){
-                g.drawImage(png[pc.move_card_type.get(i)].get(pc.move_card_number.get(i)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2 + i * papercard_gap.get(pc.move_card_position)) , papercard_size[row] , papercard_size[column] , jpanel);
+            g.drawImage(png[pc.move_card_type.get(quantity - 1)].get(pc.move_card_number.get(quantity - 1)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2) , papercard_size[row] , papercard_size[column] , jpanel);
+            for(int i = 1 ; i < quantity ; i ++){
+                g.drawImage(png[pc.move_card_type.get(quantity - 1 - i)].get(pc.move_card_number.get(quantity - 1 - i)) , (int)(mouse_point[row] - papercard_size[row] / 2) , (int)(mouse_point[column] - papercard_gap.get(pc.move_card_position) / 2 + i * papercard_gap.get(pc.move_card_position)) , papercard_size[row] , papercard_size[column] , jpanel);
             }
         }
     }

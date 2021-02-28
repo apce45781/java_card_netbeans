@@ -44,15 +44,15 @@ public class Paper_card {
     
     protected void delete(int start_position , int count){
         for(int i = 0 ; i < count ; i ++){
-            papercard_type.remove(start_position);
-            papercard_number.remove(start_position);
+            papercard_type.remove(start_position - count + 1);
+            papercard_number.remove(start_position - count + 1);
         }
     }
     
-    private void add(int position , int count){
-        for(int i = 1 ; i <= count ; i ++){
-            papercard_type.add(position - count + i + 1 , move_card_type.get(count - i));
-            papercard_number.add(position - count + i + 1 , move_card_number.get(count - i));
+    protected void add(int end_position , int count){
+        for(int i = 0 ; i < count ; i ++){
+            papercard_type.add(end_position , move_card_type.get(i));
+            papercard_number.add(end_position , move_card_number.get(i));
         }
     }
     
@@ -60,7 +60,6 @@ public class Paper_card {
         if(start > end){
             delete(start , move_card_number.size());
             add(end , move_card_number.size());
-            
         }else{
             add(end , move_card_number.size());
             delete(start , move_card_number.size());

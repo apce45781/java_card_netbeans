@@ -20,7 +20,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     private Mouse_keyboard mk;
     private Card_interface ci;
     
-    private int fraction;
+    private int fraction = 0;
     
     Card(){
         this.setFocusable(true);
@@ -32,13 +32,9 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         mk = new Mouse_keyboard();
         ci = new Card_interface();
         
-        fraction = 0;
-        
         jframe.setBounds(100 , 50 , 875 , 700);
         jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
-        
-        restart();
         
         jframe.add(this);
         jframe.setVisible(true);
@@ -62,9 +58,6 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     }
     
     public void restart(){
-        
-        ci.pc.shuffle();
-        
         ci.position_quantity[ci.positive][0] = 7;
         ci.position_quantity[ci.positive][1] = 6;
         ci.position_quantity[ci.positive][2] = 5;
@@ -79,26 +72,29 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         ci.position_quantity[ci.positive][11] = 0;
         ci.position_quantity[ci.positive][12] = 24;
         
-        ci.position_quantity[ci.negative][0] = 6;
-        ci.position_quantity[ci.negative][1] = 5;
-        ci.position_quantity[ci.negative][2] = 4;
-        ci.position_quantity[ci.negative][3] = 3;
-        ci.position_quantity[ci.negative][4] = 2;
-        ci.position_quantity[ci.negative][5] = 1;
+        ci.position_quantity[ci.negative][0] = 0;
+        ci.position_quantity[ci.negative][1] = 0;
+        ci.position_quantity[ci.negative][2] = 0;
+        ci.position_quantity[ci.negative][3] = 0;
+        ci.position_quantity[ci.negative][4] = 0;
+        ci.position_quantity[ci.negative][5] = 0;
         ci.position_quantity[ci.negative][6] = 0;
         ci.position_quantity[ci.negative][7] = 0;
         ci.position_quantity[ci.negative][8] = 0;
         ci.position_quantity[ci.negative][9] = 0;
         ci.position_quantity[ci.negative][10] = 0;
         ci.position_quantity[ci.negative][11] = 0;
-        ci.position_quantity[ci.negative][12] = 24;
+        ci.position_quantity[ci.negative][12] = 0;
         
         int initial = 100;
         ci.card_spacing(initial);
         
-//        move_card.clear();
-//        move_type.clear();
+        ci.pc.move_card_number.clear();
+        ci.pc.move_card_type.clear();
+        ci.pc.move_card_position = initial;
         fraction = 0;
+        
+        ci.pc.shuffle();
     }
 
     @Override
@@ -113,9 +109,12 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
             fraction(negative_ten);
         }
         
-        int click_quantity = 2;
-        if(e.getClickCount() == click_quantity) {
+        int two_click = 2;
+        if(e.getClickCount() == two_click && mk.mouse_status() == mk.initial) {
+            
+            mk.change_mouse_status(mk.click);
             boolean two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
+            
             if(two_click_switch){
                 fraction(fifty);
             }
@@ -129,18 +128,23 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         if(mk.mouse_status() == mk.move){
             int end_position = mk.mouse_up(ci);
             
+            ci.card_spacing(end_position);
+            
             if(end_position < 7){
                 fraction(ten);
             }else if(end_position < 11){
                 fraction(fifty);
+            }else{
+                mk.back_home(ci);
             }
-            mk.back_home(ci);
-            
+        }
+        if(mk.mouse_status() != mk.initial){
             int initial = 100;
             ci.pc.move_card_number.clear();
             ci.pc.move_card_type.clear();
             ci.pc.move_card_position = initial;
             mk.change_mouse_status(mk.initial);
+            repaint();
         }
     }
 
@@ -155,12 +159,18 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         ci.mouse_point[ci.column] = mouse_Y;
         
         if(mk.mouse_status() == mk.initial){
-            mk.mouse_move(ci , mouse_X , mouse_Y);
+            
+            mk.change_mouse_status(mk.click);
+            boolean mouse_move = mk.mouse_move(ci , mouse_X , mouse_Y);
+            
+            if(mouse_move){
+                mk.change_mouse_status(mk.move);
+            }
         }
-        repaint();
         try{
-            Thread.sleep(30);
+            Thread.sleep(10);
         }catch(InterruptedException ex){}
+        repaint();
     }
 
     @Override
