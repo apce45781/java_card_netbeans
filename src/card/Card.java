@@ -12,9 +12,10 @@ import javax.swing.JPanel;
 
 public class Card extends JPanel implements MouseListener , MouseMotionListener , KeyListener{
     
-    private final int negative_ten = -10;
-    private final int fifty = 50;
-    private final int ten = 10;
+    public final int negative_ten = -10;
+    public final int fifty = 50;
+    public final int negative_fifty = -50;
+    public final int ten = 10;
     
     private JFrame jframe;
     private Mouse_keyboard mk;
@@ -56,46 +57,6 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         this.fraction += fraction;
         jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + this.fraction);
     }
-    
-    public void restart(){
-        ci.position_quantity[ci.positive][0] = 7;
-        ci.position_quantity[ci.positive][1] = 6;
-        ci.position_quantity[ci.positive][2] = 5;
-        ci.position_quantity[ci.positive][3] = 4;
-        ci.position_quantity[ci.positive][4] = 3;
-        ci.position_quantity[ci.positive][5] = 2;
-        ci.position_quantity[ci.positive][6] = 1;
-        ci.position_quantity[ci.positive][7] = 0;
-        ci.position_quantity[ci.positive][8] = 0;
-        ci.position_quantity[ci.positive][9] = 0;
-        ci.position_quantity[ci.positive][10] = 0;
-        ci.position_quantity[ci.positive][11] = 0;
-        ci.position_quantity[ci.positive][12] = 24;
-        
-        ci.position_quantity[ci.negative][0] = 0;
-        ci.position_quantity[ci.negative][1] = 0;
-        ci.position_quantity[ci.negative][2] = 0;
-        ci.position_quantity[ci.negative][3] = 0;
-        ci.position_quantity[ci.negative][4] = 0;
-        ci.position_quantity[ci.negative][5] = 0;
-        ci.position_quantity[ci.negative][6] = 0;
-        ci.position_quantity[ci.negative][7] = 0;
-        ci.position_quantity[ci.negative][8] = 0;
-        ci.position_quantity[ci.negative][9] = 0;
-        ci.position_quantity[ci.negative][10] = 0;
-        ci.position_quantity[ci.negative][11] = 0;
-        ci.position_quantity[ci.negative][12] = 0;
-        
-        int initial = 100;
-        ci.card_spacing(initial);
-        
-        ci.pc.move_card_number.clear();
-        ci.pc.move_card_type.clear();
-        ci.pc.move_card_position = initial;
-        fraction = 0;
-        
-        ci.pc.shuffle();
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -110,12 +71,12 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         }
         
         int two_click = 2;
-        if(e.getClickCount() == two_click && mk.mouse_status() == mk.initial) {
+        if(e.getClickCount() == two_click && mk.get_mouse_status() == mk.initial) {
             
-            mk.change_mouse_status(mk.click);
-            boolean two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
+            int two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
+            int true_and_addfraction = 0;
             
-            if(two_click_switch){
+            if(two_click_switch == true_and_addfraction){
                 fraction(fifty);
             }
         }
@@ -125,24 +86,33 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     @Override
     public void mouseReleased(MouseEvent e) {
 //        滑鼠單一放開動作
-        if(mk.mouse_status() == mk.move){
-            int end_position = mk.mouse_up(ci);
+        if(mk.get_mouse_status() == mk.move){
+            int true_and_addfraction = 0;
+            int true_not_addfraction = 1;
+            int true_and_add_negativefraction = 2;
             
-            ci.card_spacing(end_position);
+            int fraction_switch = 0;
+            int end_position = 1;
             
-            if(end_position < 7){
+            int[] mouse_up_data = mk.mouse_up(ci);
+            
+            if(mouse_up_data[fraction_switch] != ci.incompatible){
+                ci.card_spacing(mouse_up_data[end_position]);
+            }
+            
+            if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_addfraction){
                 fraction(ten);
-            }else if(end_position < 11){
+            }else if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_add_negativefraction){
+                fraction(negative_fifty);
+            }else if(mouse_up_data[end_position] < 11 && mouse_up_data[fraction_switch] == true_and_addfraction){
                 fraction(fifty);
-            }else{
+            }else if(mouse_up_data[fraction_switch] != true_and_addfraction && mouse_up_data[fraction_switch] != true_not_addfraction){
                 mk.back_home(ci);
             }
+            
         }
-        if(mk.mouse_status() != mk.initial){
-            int initial = 100;
-            ci.pc.move_card_number.clear();
-            ci.pc.move_card_type.clear();
-            ci.pc.move_card_position = initial;
+        if(mk.get_mouse_status() != mk.initial){
+            ci.pc.clear_move_card();
             mk.change_mouse_status(mk.initial);
             repaint();
         }
@@ -152,13 +122,12 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     public void mouseDragged(MouseEvent e) {
 //        滑鼠點擊並移動
 
-        float mouse_X = e.getX();
-        float mouse_Y = e.getY();
+        ci.mouse_point[ci.row] = e.getX();
+        ci.mouse_point[ci.column] = e.getY();
         
-        ci.mouse_point[ci.row] = mouse_X;
-        ci.mouse_point[ci.column] = mouse_Y;
-        
-        if(mk.mouse_status() == mk.initial){
+        if(mk.get_mouse_status() == mk.initial){
+            float mouse_X = e.getX();
+            float mouse_Y = e.getY();
             
             mk.change_mouse_status(mk.click);
             boolean mouse_move = mk.mouse_move(ci , mouse_X , mouse_Y);
@@ -213,5 +182,40 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     @Override
     public void keyReleased(KeyEvent e) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public void restart(){
+        
+        ci.pc.clear_move_card();
+        
+        ci.pc.clear_papercard();
+        ci.pc.create_and_shuffle();
+        
+        for(int i = 0 ; i < 13 ; i ++){
+            if(i > 6 && i < 12){
+                ci.pc.addAll_positive_quantity(i , 0);
+                ci.pc.addAll_negative_quantity(i , 0);
+            }else{
+                ci.pc.addAll_positive_quantity(i , ci.pc.get_card_quantity(i));
+                ci.pc.addAll_negative_quantity(i , ci.pc.get_card_quantity(i) - 1);
+            }
+        }
+        ci.pc.addAll_negative_quantity(0 , 0);
+        ci.pc.addAll_negative_quantity(1 , 0);
+        ci.pc.addAll_negative_quantity(2 , 0);
+        ci.pc.addAll_negative_quantity(3 , 0);
+        ci.pc.addAll_negative_quantity(4 , 0);
+        ci.pc.addAll_negative_quantity(5 , 0);
+        ci.pc.addAll_negative_quantity(6 , 0);
+        ci.pc.addAll_negative_quantity(7 , 0);
+        ci.pc.addAll_negative_quantity(8 , 0);
+        ci.pc.addAll_negative_quantity(9 , 0);
+        ci.pc.addAll_negative_quantity(10 , 0);
+        ci.pc.addAll_negative_quantity(11 , 0);
+        ci.pc.addAll_negative_quantity(12 , 0);
+        
+        ci.card_spacing(ci.pc.initial);
+        
+        fraction = 0;
     }
 }
