@@ -102,7 +102,12 @@ public class Card_interface{
             if(i == 11){
                 continue;
             }else if(pc.get_positive_quantity(i) == 0){
-                g.drawImage(png[background].get(background) , p_coordinate[i][row] , p_coordinate[i][column] , papercard_size[row] , papercard_size[column] , jpanel);
+                g.drawImage(png[background].get(background) ,
+                        p_coordinate[i][row] ,
+                        p_coordinate[i][column] ,
+                        papercard_size[row] ,
+                        papercard_size[column] ,
+                        jpanel);
             }
         }
     }
@@ -124,12 +129,22 @@ public class Card_interface{
         if(quantity == 1){
             int point1 = (int)(mouse_point[row] - papercard_size[row] / 2);
             int point2 = (int)(mouse_point[column] - papercard_size[column] / 2);
-            g.drawImage(png[pc.getMT(quantity)].get(pc.getMN(quantity)) , point1 , point2 , papercard_size[row] , papercard_size[column] , jpanel);
+            g.drawImage(png[pc.getMT(quantity)].get(pc.getMN(quantity)) ,
+                    point1 ,
+                    point2 ,
+                    papercard_size[row] ,
+                    papercard_size[column] ,
+                    jpanel);
         }else{
             for(int i = 0 ; i < quantity ; i ++){
                 int point1 = (int)(mouse_point[row] - papercard_size[row] / 2);
                 int point2 = (int)(mouse_point[column] - papercard_gap.get(i) / 2 + (i * papercard_gap.get(i)));
-                g.drawImage(png[pc.getMT(i + 1)].get(pc.getMN(i + 1)) , point1 , point2 , papercard_size[row] , papercard_size[column] , jpanel);
+                g.drawImage(png[pc.getMT(i + 1)].get(pc.getMN(i + 1)) ,
+                        point1 ,
+                        point2 ,
+                        papercard_size[row] ,
+                        papercard_size[column] ,
+                        jpanel);
             }
         }
     }
@@ -146,18 +161,26 @@ public class Card_interface{
                 if(i > pc.get_positive_quantity(position) - 2){
                     
                     g.drawImage(png[pc.getT(position , pc.get_positive_quantity(position) - i)].get(pc.getN(position , pc.get_positive_quantity(position) - i)) ,
-                            p_coordinate[position][row] , p_coordinate[position][column] ,
-                            papercard_size[row] , papercard_size[column] , jpanel);
+                            p_coordinate[position][row] ,
+                            p_coordinate[position][column] ,
+                            papercard_size[row] ,
+                            papercard_size[column] , jpanel);
                 }
             }else{
                 if(i < pc.get_negative_quantity(position)){
                     g.drawImage(png[card].get(card) ,
-                            p_coordinate[position][row] , (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) ,
-                            papercard_size[row] , papercard_size[column] , jpanel);
+                            p_coordinate[position][row] ,
+                            (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) ,
+                            papercard_size[row] ,
+                            papercard_size[column] ,
+                            jpanel);
                 }else{
                     g.drawImage(png[pc.getT(position , pc.get_positive_quantity(position) - i)].get(pc.getN(position , pc.get_positive_quantity(position) - i)) ,
-                            p_coordinate[position][row] , (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) ,
-                            papercard_size[row] , papercard_size[column] , jpanel);
+                            p_coordinate[position][row] ,
+                            (int)(p_coordinate[position][column] + i * papercard_gap.get(position)) ,
+                            papercard_size[row] ,
+                            papercard_size[column] ,
+                            jpanel);
                 }
             }
         }

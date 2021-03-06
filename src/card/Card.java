@@ -6,11 +6,45 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+class jframe_file extends JFrame {
+    
+    private int fraction = 0;
+    private Card_interface ci;
+    
+    jframe_file(JPanel jpanel , Card_interface ci){
+        this.ci = ci;
+        this.setBounds(100 , 50 , 875 , 700);
+        this.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
+        this.add(jpanel);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setVisible(true);
+    }
+    
+    public void fraction(int fraction){
+        this.fraction += fraction;
+        this.setTitle("接龍    點擊F2即可重新開局  分數 : " + this.fraction);
+    }
+    
+    public void fraction_initial(){
+        fraction = 0;
+        this.setTitle("接龍    點擊F2即可重新開局  分數 : " + this.fraction);
+    }
+    
+    @Override
+    protected void processWindowEvent(final WindowEvent e){
+        if(e.getID() == 201){
+            new json().set(ci);
+        }
+        super.processWindowEvent(e);
+    }
+}
 
 public class Card extends JPanel implements MouseListener , MouseMotionListener , KeyListener{
     
@@ -19,11 +53,10 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     public final int negative_fifty = -50;
     public final int ten = 10;
     
-    private JFrame jframe;
+    private jframe_file jframe;
     private Mouse_keyboard mk;
     private Card_interface ci;
     
-    private int fraction = 0;
     
     Card(){
         this.setFocusable(true);
@@ -31,20 +64,13 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         this.addMouseListener(this);
         this.addKeyListener(this);
         
-        jframe = new JFrame();
         mk = new Mouse_keyboard();
         ci = new Card_interface();
-        
-        jframe.setBounds(100 , 50 , 875 , 700);
-        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
-        
-        jframe.add(this);
+        jframe = new jframe_file(this , ci);
         
         paper_card_open_start();
         
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                
-        jframe.setVisible(true);
+        repaint();
     }
     
     
@@ -53,23 +79,21 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     }
     
     public void paper_card_open_start(){
-        List[][] open_start = new json().get();
-        System.out.println(open_start[0][0].get(0));
-        if((int) open_start[0][0].get(0) != -1){
-            System.out.println("-------");
+        List[][] file_data = new json().get();
+        if((int) file_data[0][0].get(0) != -1){
             if(JOptionPane.showConfirmDialog(jframe , "是否繼續上次未完成的遊戲?", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-                int position_quantity_codename = 0;
-                int paper_card_codename = 1;
-                int type = 0;
-                int number = 1;
-                int positive = 0;
-                int negative = 1;
+                
+                int position_quantity_codename = 0 , paper_card_codename = 1;
+                int type = 0 , number = 1;
+                int positive = 0 , negative = 1;
+                
                 int[][] position_quantity = new int[2][13];
                 for(int i = 0 ; i < 13 ; i ++){
-                    position_quantity[positive][i] = (int) open_start[position_quantity_codename][positive].get(i);
-                    position_quantity[negative][i] = (int) open_start[position_quantity_codename][negative].get(i);
+                    position_quantity[positive][i] = (int) file_data[position_quantity_codename][positive].get(i);
+                    position_quantity[negative][i] = (int) file_data[position_quantity_codename][negative].get(i);
                 }
-                ci.pc.paper_card_input(open_start[paper_card_codename][type] , open_start[paper_card_codename][number] , position_quantity);
+                
+                ci.pc.paper_card_input(file_data[paper_card_codename][type] , file_data[paper_card_codename][number] , position_quantity);
             }else{
                 ci.pc.create_and_shuffle();
                 String path = "Record.json";
@@ -88,11 +112,6 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         
         ci.show_picture(g , mk , this);
     }
-    
-    public void fraction(int fraction){
-        this.fraction += fraction;
-        jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + this.fraction);
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -103,7 +122,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         
         boolean one_click_switch = mk.one_click_switch(ci , mouse_X , mouse_Y);
         if(one_click_switch){
-            fraction(negative_ten);
+            jframe.fraction(negative_ten);
         }
         
         int two_click = 2;
@@ -113,7 +132,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
             int true_and_addfraction = 0;
             
             if(two_click_switch == true_and_addfraction){
-                fraction(fifty);
+                jframe.fraction(fifty);
             }
         }
         repaint();
@@ -137,11 +156,11 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
             }
             
             if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_addfraction){
-                fraction(ten);
+                jframe.fraction(ten);
             }else if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_add_negativefraction){
-                fraction(negative_fifty);
+                jframe.fraction(negative_fifty);
             }else if(mouse_up_data[end_position] < 11 && mouse_up_data[fraction_switch] == true_and_addfraction){
-                fraction(fifty);
+                jframe.fraction(fifty);
             }else if(mouse_up_data[fraction_switch] != true_and_addfraction && mouse_up_data[fraction_switch] != true_not_addfraction){
                 mk.back_home(ci);
             }
@@ -184,7 +203,7 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         if(e.getKeyCode() == KeyEvent.VK_F2){
             if(JOptionPane.showConfirmDialog(jframe , "遊戲還未完成\n是否重開新局", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
                 restart();
-                fraction(0);
+                jframe.fraction(0);
                 repaint();
             }
         }
@@ -260,6 +279,6 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         
         ci.card_spacing(ci.pc.initial);
         
-        fraction = 0;
+        jframe.fraction_initial();
     }
 }

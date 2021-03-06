@@ -53,7 +53,6 @@ public class json {
                 papercard[paper_card_codename][0].add(paper_card_type.getInt(i));
                 papercard[paper_card_codename][1].add(paper_card_number.getInt(i));
             }
-            
             return papercard;
             
         }catch(FileNotFoundException e){
@@ -68,21 +67,22 @@ public class json {
     }
     
     public void set(Card_interface ci) {
-        try(BufferedWriter writeout = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Record.json")))){
-            
-            JSONObject jo = new JSONObject();
-            int[][] position_quantity = getPosition_quantity(ci);
-            if(position_quantity[0][0] != -1){
+        int[][] position_quantity = getPosition_quantity(ci);
+        System.out.println(position_quantity[0][0]);
+        if(position_quantity[0][0] != -1){
+            try(BufferedWriter writeout = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Record.json")))){
+                
+                JSONObject jo = new JSONObject();
                 jo.put("position_quantity" , position_quantity);
                 jo.put("paper_card" , getPaper_card(ci));
                 writeout.write(jo.toString());
                 writeout.flush();
+            
+            }catch(FileNotFoundException ffe){
+
+            }catch(IOException ioe){
+                
             }
-            
-        }catch(FileNotFoundException ffe){
-            
-        }catch(IOException ioe){
-            
         }
     }
     
@@ -103,34 +103,37 @@ public class json {
     public int[][] getPosition_quantity(Card_interface ci){
         int positive = 0;
         int negative = 1;
-        int position_quantity[][] = new int[2][13];
+        
+        boolean[] Record_switch_1 = new boolean[13];
+        boolean[] Record_switch_2 = new boolean[4];
+        
+        int[][] initial_data = {{7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 24} , {6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 23}};
+        int[][] data = new int[2][13];
+        
         for(int i = 0 ; i < 13 ; i ++){
-            position_quantity[positive][i] = ci.pc.get_positive_quantity(i);
-            position_quantity[negative][i] = ci.pc.get_negative_quantity(i);
-        }
-        if(Record_switch(ci , position_quantity)){
-            return position_quantity;
-        }else{
-            return new int[][]{{-1}};
-        }
-    }
-    
-    public boolean Record_switch(Card_interface ci , int[][] position_quantity){
-        int positive = 0;
-        int negative = 1;
-        boolean Record_switch[] = new boolean[13];
-        for(int i = 0 ; i < 13 ; i ++){
-            if(position_quantity[positive][i] != ci.pc.get_positive_quantity(i) &&
-                    position_quantity[negative][i] != ci.pc.get_negative_quantity(i)){
-                Record_switch[i] = true;
+            data[positive][i] = ci.pc.get_positive_quantity(i);
+            data[negative][i] = ci.pc.get_negative_quantity(i);
+            
+            if(initial_data[positive][i] != ci.pc.get_positive_quantity(i) &&
+                    initial_data[negative][i] != ci.pc.get_negative_quantity(i)){
+                Record_switch_1[i] = true;
+            }
+            if(i > 8){
+                if(ci.pc.get_positive_quantity(i - 9) == 13){
+                    Record_switch_2[i - 9] = true;
+                }
             }
         }
-        if(Record_switch[0] && Record_switch[1] && Record_switch[2] && Record_switch[3] && Record_switch[4] &&
-                Record_switch[5] && Record_switch[6] && Record_switch[7] && Record_switch[8] && Record_switch[9] &&
-                Record_switch[10] && Record_switch[11] && Record_switch[12]){
-            return true;
+        if(Record_switch_1[0] || Record_switch_1[1] || Record_switch_1[2] ||
+                Record_switch_1[3] || Record_switch_1[4] || Record_switch_1[5] ||
+                Record_switch_1[6] || Record_switch_1[7] || Record_switch_1[8] ||
+                Record_switch_1[9] || Record_switch_1[10] || Record_switch_1[11] ||
+                Record_switch_1[12]){
+            return data;
+        }else if(Record_switch_2[0] || Record_switch_2[1] || Record_switch_2[2] || Record_switch_2[3]){
+            return data;
         }else{
-            return false;
+            return new int[][]{{-1}};
         }
     }
 }

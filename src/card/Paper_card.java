@@ -39,24 +39,17 @@ public class Paper_card {
     }
     
     public void paper_card_input(List<Integer> papercard_type , List<Integer> papercard_number , int[][] position_quantity){
+        
         int count = 0;
         int positive = 0;
         int negative = 1;
         for(int i = 0 ; i < 13 ; i ++){
-            if(i == 12){
-                for(; count < 52 ; count ++){
-                    this.papercard_type[i].add(papercard_type.get(count));
-                    this.papercard_number[i].add(papercard_number.get(count));
-                }
-                break;
-            }else if(i < 7){
-                for(int k = 0 ; k < 7 - i  ; k ++ , count ++){
-                    this.papercard_type[i].add(papercard_type.get(count));
-                    this.papercard_number[i].add(papercard_number.get(count));
-                }
-            }
             this.position_quantity[positive][i] = position_quantity[positive][i];
             this.position_quantity[negative][i] = position_quantity[negative][i];
+            for(int k = 0 ; k < this.position_quantity[positive][i] ; k ++ , count ++){
+                this.papercard_type[i].add(papercard_type.get(count));
+                this.papercard_number[i].add(papercard_number.get(count));
+            }
         }
     }
     
