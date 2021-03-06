@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Paper_card {
     
-    private int[][] position_quantity = {{7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 24} , {6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 23}};
+    private int[][] position_quantity = new int[2][13];
     
     private List<Integer>[] papercard_type = new ArrayList[13];
     private List<Integer>[] papercard_number = new ArrayList[13];
@@ -21,7 +21,6 @@ public class Paper_card {
             papercard_type[i] = new ArrayList<Integer>();
             papercard_number[i] = new ArrayList<Integer>();
         }
-        create_and_shuffle();
     }
     
     public void create_and_shuffle(){
@@ -33,19 +32,31 @@ public class Paper_card {
         }
         Collections.shuffle(papercard_type);
         Collections.shuffle(papercard_number);
+        
+        int[][] position_quantity = {{7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 24} , {6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 23}};
+        
+        paper_card_input(papercard_type , papercard_number , position_quantity);
+    }
+    
+    public void paper_card_input(List<Integer> papercard_type , List<Integer> papercard_number , int[][] position_quantity){
         int count = 0;
-        for(int i = 0 ; i < 8 ; i ++){
-            if(i == 7){
+        int positive = 0;
+        int negative = 1;
+        for(int i = 0 ; i < 13 ; i ++){
+            if(i == 12){
                 for(; count < 52 ; count ++){
-                    this.papercard_type[12].add(papercard_type.get(count));
-                    this.papercard_number[12].add(papercard_number.get(count));
+                    this.papercard_type[i].add(papercard_type.get(count));
+                    this.papercard_number[i].add(papercard_number.get(count));
                 }
                 break;
+            }else if(i < 7){
+                for(int k = 0 ; k < 7 - i  ; k ++ , count ++){
+                    this.papercard_type[i].add(papercard_type.get(count));
+                    this.papercard_number[i].add(papercard_number.get(count));
+                }
             }
-            for(int k = 0 ; k < 7 - i  ; k ++ , count ++){
-                this.papercard_type[i].add(papercard_type.get(count));
-                this.papercard_number[i].add(papercard_number.get(count));
-            }
+            this.position_quantity[positive][i] = position_quantity[positive][i];
+            this.position_quantity[negative][i] = position_quantity[negative][i];
         }
     }
     

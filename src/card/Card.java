@@ -6,6 +6,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,15 +36,49 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         ci = new Card_interface();
         
         jframe.setBounds(100 , 50 , 875 , 700);
-        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jframe.setTitle("接龍    點擊F2即可重新開局  分數 : " + fraction);
         
         jframe.add(this);
+        
+        paper_card_open_start();
+        
+        jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                
         jframe.setVisible(true);
     }
     
+    
     public static void main(String[] args) {
         new Card();
+    }
+    
+    public void paper_card_open_start(){
+        List[][] open_start = new json().get();
+        System.out.println(open_start[0][0].get(0));
+        if((int) open_start[0][0].get(0) != -1){
+            System.out.println("-------");
+            if(JOptionPane.showConfirmDialog(jframe , "是否繼續上次未完成的遊戲?", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                int position_quantity_codename = 0;
+                int paper_card_codename = 1;
+                int type = 0;
+                int number = 1;
+                int positive = 0;
+                int negative = 1;
+                int[][] position_quantity = new int[2][13];
+                for(int i = 0 ; i < 13 ; i ++){
+                    position_quantity[positive][i] = (int) open_start[position_quantity_codename][positive].get(i);
+                    position_quantity[negative][i] = (int) open_start[position_quantity_codename][negative].get(i);
+                }
+                ci.pc.paper_card_input(open_start[paper_card_codename][type] , open_start[paper_card_codename][number] , position_quantity);
+            }else{
+                ci.pc.create_and_shuffle();
+                String path = "Record.json";
+                File file = new File(path);
+                file.delete();
+            }
+        }else{
+            ci.pc.create_and_shuffle();
+        }
     }
     
     @Override
@@ -151,6 +187,14 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
                 fraction(0);
                 repaint();
             }
+        }
+        if(e.getKeyCode() == KeyEvent.VK_F3){
+            new json().set(ci);
+            System.out.println("已儲存");
+        }
+        if(e.getKeyCode() == KeyEvent.VK_F4){
+            paper_card_open_start();
+            System.out.println("已讀取");
         }
     }
 
