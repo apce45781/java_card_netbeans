@@ -24,31 +24,49 @@ public class Paper_card {
     }
     
     public void create_and_shuffle(){
-        List<Integer> papercard_type = new ArrayList();
-        List<Integer> papercard_number = new ArrayList();
+        int[][] papercard = new int[2][52];
+        
+        int type = 0;
+        int number = 1;
+        
         for(int i = 0 ; i < 52 ; i ++){
-            papercard_type.add(i / 13);
-            papercard_number.add(i % 13);
+            papercard[type][i] = i / 13;
+            papercard[number][i] = i % 13;
         }
-        Collections.shuffle(papercard_type);
-        Collections.shuffle(papercard_number);
+        int count , random_type , random_number;
+        for(int i = 0 ; i < 200 ; i ++){
+            count = (int) (Math.random() * 51);
+            random_type = papercard[type][count];
+            random_number = papercard[number][count];
+            for(int q = count ; q < 51 ; q ++){
+                papercard[type][q] = papercard[type][q + 1];
+                papercard[number][q] = papercard[number][q + 1];
+            }
+            papercard[type][51] = random_type;
+            papercard[number][51] = random_number;
+        }
         
         int[][] position_quantity = {{7 , 6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 24} , {6 , 5 , 4 , 3 , 2 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 23}};
         
-        paper_card_input(papercard_type , papercard_number , position_quantity);
+        paper_card_input(papercard , position_quantity);
     }
     
-    public void paper_card_input(List<Integer> papercard_type , List<Integer> papercard_number , int[][] position_quantity){
+    public void paper_card_input(int[][] paper_card , int[][] position_quantity){
         
         int count = 0;
+        
         int positive = 0;
         int negative = 1;
+        
+        int type = 0;
+        int number = 1;
+        
         for(int i = 0 ; i < 13 ; i ++){
             this.position_quantity[positive][i] = position_quantity[positive][i];
             this.position_quantity[negative][i] = position_quantity[negative][i];
             for(int k = 0 ; k < this.position_quantity[positive][i] ; k ++ , count ++){
-                this.papercard_type[i].add(papercard_type.get(count));
-                this.papercard_number[i].add(papercard_number.get(count));
+                this.papercard_type[i].add(paper_card[type][count]);
+                this.papercard_number[i].add(paper_card[number][count]);
             }
         }
     }
@@ -183,7 +201,7 @@ public class Paper_card {
     public void judgment_positive_and_negative(int start_position){
         int positive = 0;
         int negative = 1;
-        if(position_quantity[positive][start_position] == position_quantity[negative][start_position]){
+        if(position_quantity[positive][start_position] >= position_quantity[negative][start_position]){
             if(position_quantity[negative][start_position] != 0){
                 position_quantity[negative][start_position] --;
             }

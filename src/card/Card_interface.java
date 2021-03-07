@@ -33,6 +33,7 @@ public class Card_interface{
     
     private Map<Integer , Float> papercard_gap = new HashMap();
     private float[] top_papercard_gap = new float[2];
+    private float move_card_gap;
     
     public float[] mouse_point = new float[2];
     
@@ -55,16 +56,31 @@ public class Card_interface{
             
             papercard_location_settings();
             
-            int initial = -1;
-            card_spacing(initial);
+            card_spacing(pc.initial);
+            
+            for(int i = 0 ; i < 13 ; i ++){
+                t_coordinate_settings(i);
+            }
+        }
+    }
+    
+    public void t_coordinate_settings(int position){
+        if(position == 12){
+            t_coordinate[position][row] = (int)(p_coordinate[position][row] + (pc.get_positive_quantity(position) - 1) * top_papercard_gap[row]);
+            t_coordinate[position][column] = (int)(p_coordinate[position][column] + (pc.get_positive_quantity(position) - 1) * top_papercard_gap[column]);
+        }else if(position > 6){
+            t_coordinate[position][row] = p_coordinate[position][row];
+            t_coordinate[position][column] = p_coordinate[position][column];
+        }else{
+            t_coordinate[position][row] = p_coordinate[position][row];
+            t_coordinate[position][column] = (int)(p_coordinate[position][column] + (pc.get_positive_quantity(position) - 1) * papercard_gap.get(position));
         }
     }
     
     public void papercard_location_settings(){
 //        位置1~13座標設定
         for(int i = 0 ; i < 7 ; i ++){
-            p_coordinate[i][row] =
-                    jpanel_size[row] - ((i + 1) * papercard_size[row]) - (i + 1) * ((jpanel_size[row] - (7 * papercard_size[row])) / 8);
+            p_coordinate[i][row] = jpanel_size[row] - ((i + 1) * papercard_size[row]) - (i + 1) * ((jpanel_size[row] - (7 * papercard_size[row])) / 8);
             p_coordinate[i][column] = 5 * position_gap[column] + papercard_size[column];
         }
         int count = 3;
@@ -78,19 +94,23 @@ public class Card_interface{
         p_coordinate[12][column] = position_gap[column];
     }
     
-    public void card_spacing(int position){ 
+    public void card_spacing(int position){
 //        每個位置，卡片間的間距設定
-
         if(position == pc.initial){
+            move_card_gap = pc.initial;
             top_papercard_gap[row] = papercard_size[column] / 120;
             top_papercard_gap[column] = papercard_size[column] / 100;
             for(int i = 0 ; i < 7 ; i ++){
                 papercard_gap.put(i , (float)(papercard_size[column] / 4));
             }
-        }else{
-            if(t_coordinate[position][column] + papercard_size[column] >= jpanel_size[column]){
-                float gap = (t_coordinate[position][column] - p_coordinate[position][column]) / (pc.get_positive_quantity(position) - 1);
+        }else if(position < 7){
+            float position_gap = (pc.get_positive_quantity(position) - 1) * papercard_size[column] / 4;
+            
+            if(p_coordinate[position][column] + position_gap + papercard_size[column] >= jpanel_size[column]){
+                float gap = (jpanel_size[column] - p_coordinate[position][column] - papercard_size[column]) / (pc.get_positive_quantity(position));
                 papercard_gap.put(position , gap);
+            }else{
+                papercard_gap.put(position , (float)(papercard_size[column] / 4));
             }
         }
     }
@@ -138,7 +158,7 @@ public class Card_interface{
         }else{
             for(int i = 0 ; i < quantity ; i ++){
                 int point1 = (int)(mouse_point[row] - papercard_size[row] / 2);
-                int point2 = (int)(mouse_point[column] - papercard_gap.get(i) / 2 + (i * papercard_gap.get(i)));
+                int point2 = (int)(mouse_point[column] - move_card_gap / 2 + (i * move_card_gap));
                 g.drawImage(png[pc.getMT(i + 1)].get(pc.getMN(i + 1)) ,
                         point1 ,
                         point2 ,
@@ -184,16 +204,6 @@ public class Card_interface{
                 }
             }
         }
-        if(position == 12){
-            t_coordinate[position][row] = (int)(p_coordinate[position][row] + (pc.get_positive_quantity(position) - 1) * top_papercard_gap[row]);
-            t_coordinate[position][column] = (int)(p_coordinate[position][column] + (pc.get_positive_quantity(position) - 1) * top_papercard_gap[column]);
-        }else if(position > 6){
-            t_coordinate[position][row] = p_coordinate[position][row];
-            t_coordinate[position][column] = p_coordinate[position][column];
-        }else{
-            t_coordinate[position][row] = p_coordinate[position][row];
-            t_coordinate[position][column] = (int)(p_coordinate[position][column] + (pc.get_positive_quantity(position) - 1) * papercard_gap.get(position));
-        }
     }
     
     public int getRow_card_size(){
@@ -218,5 +228,13 @@ public class Card_interface{
     
     public float get_gap(int position){
         return papercard_gap.get(position);
+    }
+    
+    public float get_Mgap(){
+        return move_card_gap;
+    }
+    
+    public void add_Mgap(float value){
+        move_card_gap = value;
     }
 }

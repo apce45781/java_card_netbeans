@@ -40,7 +40,7 @@ class jframe_file extends JFrame {
     @Override
     protected void processWindowEvent(final WindowEvent e){
         if(e.getID() == 201){
-            new json().set(ci);
+            new json().output(ci , fraction);
         }
         super.processWindowEvent(e);
     }
@@ -79,27 +79,27 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     }
     
     public void paper_card_open_start(){
-        List[][] file_data = new json().get();
-        if((int) file_data[0][0].get(0) != -1){
+        int[][][] file_data = new json().input();
+        if(file_data[0][0][0] != -1){
+            String path = "Record.json";
+            File file = new File(path);
             if(JOptionPane.showConfirmDialog(jframe , "是否繼續上次未完成的遊戲?", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
-                
-                int position_quantity_codename = 0 , paper_card_codename = 1;
-                int type = 0 , number = 1;
-                int positive = 0 , negative = 1;
-                
-                int[][] position_quantity = new int[2][13];
-                for(int i = 0 ; i < 13 ; i ++){
-                    position_quantity[positive][i] = (int) file_data[position_quantity_codename][positive].get(i);
-                    position_quantity[negative][i] = (int) file_data[position_quantity_codename][negative].get(i);
+                int paper_card = 0;
+                int position_quantity = 1;
+                jframe.fraction(file_data[2][0][0]);
+                ci.pc.paper_card_input(file_data[position_quantity] , file_data[paper_card]);
+                for(int i = 0 ; i < 12 ; i ++){
+                    ci.card_spacing(i);
+                    ci.t_coordinate_settings(i);
                 }
-                
-                ci.pc.paper_card_input(file_data[paper_card_codename][type] , file_data[paper_card_codename][number] , position_quantity);
             }else{
                 ci.pc.create_and_shuffle();
-                String path = "Record.json";
-                File file = new File(path);
-                file.delete();
+                for(int i = 0 ; i < 12 ; i ++){
+                    ci.card_spacing(i);
+                    ci.t_coordinate_settings(i);
+                }
             }
+            file.delete();
         }else{
             ci.pc.create_and_shuffle();
         }
@@ -111,6 +111,30 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         ci.show_background(this , g);
         
         ci.show_picture(g , mk , this);
+    }
+    
+    public void restart(){
+        
+        ci.pc.clear_move_card();
+        
+        ci.pc.clear_papercard();
+        ci.pc.create_and_shuffle();
+        
+        for(int i = 0 ; i < 13 ; i ++){
+            if(i > 6 && i < 12){
+                ci.pc.addAll_positive_quantity(i , 0);
+                ci.pc.addAll_negative_quantity(i , 0);
+            }else{
+                ci.pc.addAll_positive_quantity(i , ci.pc.get_card_quantity(i));
+                ci.pc.addAll_negative_quantity(i , ci.pc.get_card_quantity(i) - 1);
+            }
+        }
+        
+        ci.card_spacing(ci.pc.initial);
+        for(int i = 0 ; i < 7 ; i ++){
+            ci.t_coordinate_settings(i);
+        }
+        jframe.fraction_initial();
     }
 
     @Override
@@ -128,12 +152,18 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
         int two_click = 2;
         if(e.getClickCount() == two_click && mk.get_mouse_status() == mk.initial) {
             
-            int two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
+            int[] two_click_switch = mk.two_click_switch(ci , mouse_X , mouse_Y);
             int true_and_addfraction = 0;
             
-            if(two_click_switch == true_and_addfraction){
+            if(two_click_switch[0] == true_and_addfraction){
                 jframe.fraction(fifty);
             }
+            ci.card_spacing(two_click_switch[1]);
+            ci.card_spacing(two_click_switch[2]);
+            ci.t_coordinate_settings(two_click_switch[1]);
+            ci.t_coordinate_settings(two_click_switch[2]);
+            
+            judgment_end();
         }
         repaint();
     }
@@ -151,25 +181,52 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
             
             int[] mouse_up_data = mk.mouse_up(ci);
             
-            if(mouse_up_data[fraction_switch] != ci.incompatible){
-                ci.card_spacing(mouse_up_data[end_position]);
-            }
-            
-            if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_addfraction){
+            if(     mouse_up_data[end_position] < 7 &&
+                    mouse_up_data[fraction_switch] == true_and_addfraction){
                 jframe.fraction(ten);
-            }else if(mouse_up_data[end_position] < 7 && mouse_up_data[fraction_switch] == true_and_add_negativefraction){
+            }else if(mouse_up_data[end_position] < 7 &&
+                     mouse_up_data[fraction_switch] == true_and_add_negativefraction){
                 jframe.fraction(negative_fifty);
-            }else if(mouse_up_data[end_position] < 11 && mouse_up_data[fraction_switch] == true_and_addfraction){
+            }else if(mouse_up_data[end_position] < 11 &&
+                     mouse_up_data[fraction_switch] == true_and_addfraction){
                 jframe.fraction(fifty);
-            }else if(mouse_up_data[fraction_switch] != true_and_addfraction && mouse_up_data[fraction_switch] != true_not_addfraction){
+            }else if(mouse_up_data[fraction_switch] != true_and_addfraction &&
+                     mouse_up_data[fraction_switch] != true_not_addfraction){
                 mk.back_home(ci);
             }
             
+            if(mouse_up_data[fraction_switch] != ci.incompatible){
+                ci.card_spacing(mouse_up_data[end_position]);
+                ci.card_spacing(ci.pc.get_move_position());
+                ci.t_coordinate_settings(mouse_up_data[end_position]);
+                ci.t_coordinate_settings(ci.pc.get_move_position());
+            }
+            judgment_end();
         }
         if(mk.get_mouse_status() != mk.initial){
             ci.pc.clear_move_card();
+            ci.add_Mgap(ci.pc.initial);
             mk.change_mouse_status(mk.initial);
             repaint();
+        }
+    }
+    
+    public void judgment_end(){
+        if(ci.pc.get_positive_quantity(7) == 13 &&
+                ci.pc.get_positive_quantity(8) == 13 &&
+                ci.pc.get_positive_quantity(9) == 13 &&
+                ci.pc.get_positive_quantity(10) == 13){
+            repaint();
+            try{
+                Thread.sleep(20);
+            }catch(InterruptedException e){}
+            if(JOptionPane.showConfirmDialog(jframe , "恭喜完成遊戲!!\n請問是否開啟新局", "!!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION){
+                restart();
+                jframe.fraction(0);
+                repaint();
+            }else{
+                System.exit(0);
+            }
         }
     }
 
@@ -207,14 +264,6 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
                 repaint();
             }
         }
-        if(e.getKeyCode() == KeyEvent.VK_F3){
-            new json().set(ci);
-            System.out.println("已儲存");
-        }
-        if(e.getKeyCode() == KeyEvent.VK_F4){
-            paper_card_open_start();
-            System.out.println("已讀取");
-        }
     }
 
     @Override
@@ -245,40 +294,5 @@ public class Card extends JPanel implements MouseListener , MouseMotionListener 
     @Override
     public void keyReleased(KeyEvent e) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    public void restart(){
-        
-        ci.pc.clear_move_card();
-        
-        ci.pc.clear_papercard();
-        ci.pc.create_and_shuffle();
-        
-        for(int i = 0 ; i < 13 ; i ++){
-            if(i > 6 && i < 12){
-                ci.pc.addAll_positive_quantity(i , 0);
-                ci.pc.addAll_negative_quantity(i , 0);
-            }else{
-                ci.pc.addAll_positive_quantity(i , ci.pc.get_card_quantity(i));
-                ci.pc.addAll_negative_quantity(i , ci.pc.get_card_quantity(i) - 1);
-            }
-        }
-        ci.pc.addAll_negative_quantity(0 , 0);
-        ci.pc.addAll_negative_quantity(1 , 0);
-        ci.pc.addAll_negative_quantity(2 , 0);
-        ci.pc.addAll_negative_quantity(3 , 0);
-        ci.pc.addAll_negative_quantity(4 , 0);
-        ci.pc.addAll_negative_quantity(5 , 0);
-        ci.pc.addAll_negative_quantity(6 , 0);
-        ci.pc.addAll_negative_quantity(7 , 0);
-        ci.pc.addAll_negative_quantity(8 , 0);
-        ci.pc.addAll_negative_quantity(9 , 0);
-        ci.pc.addAll_negative_quantity(10 , 0);
-        ci.pc.addAll_negative_quantity(11 , 0);
-        ci.pc.addAll_negative_quantity(12 , 0);
-        
-        ci.card_spacing(ci.pc.initial);
-        
-        jframe.fraction_initial();
     }
 }

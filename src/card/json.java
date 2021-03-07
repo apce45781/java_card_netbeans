@@ -20,12 +20,12 @@ import org.json.JSONObject;
 
 public class json {
     
-    public List[][] get() {
+    public int[][][] input() {
         String path = "Record.json";
-        try(BufferedReader Input = new BufferedReader(new InputStreamReader(new FileInputStream(path)))){
+        try(BufferedReader getdata = new BufferedReader(new InputStreamReader(new FileInputStream(path)))){
             String datas = "";
             String catch_data = "";
-            while((catch_data = Input.readLine()) != null){
+            while((catch_data = getdata.readLine()) != null){
                 datas += catch_data;
             }
             JSONObject jo = new JSONObject(datas);
@@ -36,45 +36,43 @@ public class json {
             JSONArray position_quantity_positive = position_quantity.getJSONArray(0);
             JSONArray position_quantity_negative = position_quantity.getJSONArray(1);
             
-            List<Integer>[][] papercard = new ArrayList[2][2];
-            for(int i = 0 ; i < 2 ; i ++){
-                for(int k = 0 ; k < 2 ; k ++){
-                    papercard[i][k] = new ArrayList<Integer>();
-                }
-            }
+            int[][] papercard = new int[2][52];
+            int[][] quantity = new int[2][13];
+            int[][] fraction = {{jo.getInt("fraction")}};
             
             int position_quantity_codename = 0;
             int paper_card_codename = 1;
-            for(int i = 0 ; i < position_quantity_positive.length() ; i ++){
-                papercard[position_quantity_codename][0].add(position_quantity_positive.getInt(i));
-                papercard[position_quantity_codename][1].add(position_quantity_negative.getInt(i));
+            int positive = 0;
+            int negative = 1;
+            int type = 0;
+            int number = 1;
+            for(int i = 0 ; i < 52 ; i ++){
+                papercard[type][i] = paper_card_type.getInt(i);
+                papercard[number][i] = paper_card_number.getInt(i);
+                if(i < 13){
+                    quantity[positive][i] = position_quantity_positive.getInt(i);
+                    quantity[negative][i] = position_quantity_negative.getInt(i);
+                }
             }
-            for(int i = 0 ; i < paper_card_type.length() ; i ++){
-                papercard[paper_card_codename][0].add(paper_card_type.getInt(i));
-                papercard[paper_card_codename][1].add(paper_card_number.getInt(i));
-            }
-            return papercard;
+            return new int[][][]{quantity , papercard , fraction};
             
         }catch(FileNotFoundException e){
             
         }catch(IOException ioe){
             
         }
-        List<Integer>[][] return_data = new ArrayList[1][1];
-        return_data[0][0] = new ArrayList();
-        return_data[0][0].add(-1);
-        return return_data;
+        return new int[][][]{{{-1}}};
     }
     
-    public void set(Card_interface ci) {
+    public void output(Card_interface ci , int fraction) {
         int[][] position_quantity = getPosition_quantity(ci);
-        System.out.println(position_quantity[0][0]);
         if(position_quantity[0][0] != -1){
             try(BufferedWriter writeout = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("Record.json")))){
                 
                 JSONObject jo = new JSONObject();
                 jo.put("position_quantity" , position_quantity);
                 jo.put("paper_card" , getPaper_card(ci));
+                jo.put("fraction" , fraction);
                 writeout.write(jo.toString());
                 writeout.flush();
             
@@ -114,26 +112,26 @@ public class json {
             data[positive][i] = ci.pc.get_positive_quantity(i);
             data[negative][i] = ci.pc.get_negative_quantity(i);
             
-            if(initial_data[positive][i] != ci.pc.get_positive_quantity(i) &&
-                    initial_data[negative][i] != ci.pc.get_negative_quantity(i)){
+            if(initial_data[positive][i] == ci.pc.get_positive_quantity(i) &&
+                    initial_data[negative][i] == ci.pc.get_negative_quantity(i)){
                 Record_switch_1[i] = true;
             }
-            if(i > 8){
-                if(ci.pc.get_positive_quantity(i - 9) == 13){
-                    Record_switch_2[i - 9] = true;
+            if(i > 6 && i < 11){
+                if(ci.pc.get_positive_quantity(i) == 13){
+                    Record_switch_2[i - 7] = true;
                 }
             }
         }
-        if(Record_switch_1[0] || Record_switch_1[1] || Record_switch_1[2] ||
-                Record_switch_1[3] || Record_switch_1[4] || Record_switch_1[5] ||
-                Record_switch_1[6] || Record_switch_1[7] || Record_switch_1[8] ||
-                Record_switch_1[9] || Record_switch_1[10] || Record_switch_1[11] ||
-                Record_switch_1[12]){
-            return data;
-        }else if(Record_switch_2[0] || Record_switch_2[1] || Record_switch_2[2] || Record_switch_2[3]){
-            return data;
-        }else{
+        if(Record_switch_2[0] && Record_switch_2[1] && Record_switch_2[2] && Record_switch_2[3]){
             return new int[][]{{-1}};
+        }else if((Record_switch_1[0] && Record_switch_1[1] && Record_switch_1[2] &&
+                Record_switch_1[3] && Record_switch_1[4] && Record_switch_1[5] &&
+                Record_switch_1[6] && Record_switch_1[7] && Record_switch_1[8] &&
+                Record_switch_1[9] && Record_switch_1[10] && Record_switch_1[11] &&
+                Record_switch_1[12])){
+            return new int[][]{{-1}};
+        }else{
+            return data;
         }
     }
 }

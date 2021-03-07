@@ -43,7 +43,7 @@ public class Mouse_keyboard {
             return false;
         }
     }
-    public int two_click_switch(Card_interface ci , float mouse_X , float mouse_Y){
+    public int[] two_click_switch(Card_interface ci , float mouse_X , float mouse_Y){
         boolean judgment_start;
         int judgment_end;
         
@@ -61,12 +61,12 @@ public class Mouse_keyboard {
                         int move_quantity = 1;
                         ci.pc.click_change(start_position , end_position , move_quantity);
                         ci.pc.judgment_positive_and_negative(start_position);
-                        return judgment_end;
+                        return new int[]{judgment_end , start_position , end_position};
                     }
                 }
             }
         }
-        return ci.incompatible;
+        return new int[]{ci.incompatible};
     }
     
     public boolean mouse_move(Card_interface ci , float mouse_X , float mouse_Y){
@@ -191,13 +191,13 @@ public class Mouse_keyboard {
         
         int[][] data = {{move_card_number , end_card_number} , {move_card_type , end_card_type} , {move_position_quantity , end_position_quantity}};
         if(end_position < 7){
-            return pair_position_0_6(ci , start_position , data);
+            return pair_position_0_6(ci , start_position , end_position , data);
         }else{
             return pair_position_7_10(ci , data);
         }
     }
     
-    public int pair_position_0_6(Card_interface ci , int start_position , int[][] data){
+    public int pair_position_0_6(Card_interface ci , int start_position , int end_position , int[][] data){
         int true_and_addfraction = 0;
         int true_not_addfraction = 1;
         int true_and_add_negativefraction = 2;
@@ -215,10 +215,12 @@ public class Mouse_keyboard {
                     return true_and_addfraction;
                 }
             }
-        }else if(((data[type][move] == 0 || data[type][move] == 3) && (data[type][end] == 1 || data[type][end] == 2)) ||
-                ((data[type][move] == 1 || data[type][move] == 2) && (data[type][end] == 0 || data[type][end] == 3))){
+        }else if(((data[type][move] == 0 || data[type][move] == 3) &&
+                (data[type][end] == 1 || data[type][end] == 2)) ||
+                ((data[type][move] == 1 || data[type][move] == 2) &&
+                (data[type][end] == 0 || data[type][end] == 3)) ){
             
-            if(data[number][move] == data[number][end] - 1){
+            if(data[number][move] == data[number][end] - 1 && start_position != end_position){
                 if(ci.pc.getN(start_position , 1) == data[number][end]){
                     return true_not_addfraction;
                 }else if(ci.pc.get_move_position() < 11 && ci.pc.get_move_position() > 6){
@@ -253,6 +255,9 @@ public class Mouse_keyboard {
     }
     
     public void add_move_card(Card_interface ci , int start_position , int move_quantity){
+        if(start_position < 7){
+            ci.add_Mgap(ci.get_gap(start_position));
+        }
         ci.pc.add_move_card(start_position, move_quantity);
         ci.pc.add_move_position(start_position);
         ci.pc.remove_card(start_position, move_quantity);
